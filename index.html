@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Omni Surgery Centre - Patient & Claims Analysis Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+        }
+        .chart-container {
+            position: relative;
+            height: 380px;
+            width: 100%;
+        }
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .header-themed {
+            background-color: #005C97;
+            background-image: linear-gradient(to right, #005C97, #363795);
+            color: white;
+            padding: 2rem 1rem;
+            border-radius: 0.75rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .header-themed::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 150%;
+            height: 150%;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath d='M0 50 L20 50 L25 40 L35 60 L45 30 L55 70 L65 45 L75 55 L80 50 L100 50' fill='none' stroke='rgba(255,255,255,0.1)' stroke-width='2'/%3E%3C/svg%3E");
+            background-repeat: repeat;
+            transform: translate(-50%, -50%) rotate(-15deg);
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <header class="mb-8 text-center header-themed shadow-lg">
+             <div class="relative z-10">
+                <h1 class="text-3xl md:text-4xl font-bold">Omni Surgery Centre</h1>
+                <h2 class="text-2xl md:text-3xl font-light opacity-90">Patient & Claims Analysis Report</h2>
+                <p class="text-md opacity-80 mt-2">October 2024 - April 2025</p>
+                <div class="inline-block bg-white/20 rounded-full px-4 py-2 mt-4 text-sm">
+                    <i class="fa-solid fa-user-doctor mr-2"></i>Prepared by: <strong>Farrukh Yaqoob, Medical Coder</strong>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main>
+            <!-- Key Metrics -->
+            <section id="key-metrics" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <!-- Cards will be injected here by JS -->
+            </section>
+            
+            <!-- Coding Success Highlight -->
+            <section class="mb-8">
+                 <div class="card bg-teal-50 border-l-4 border-teal-500 p-6">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fa-solid fa-check-circle text-teal-500 text-3xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-lg font-bold text-teal-800">99.5% Coding Accuracy</h3>
+                            <p class="text-teal-700">Only 0.5% claims were denied or unpaid due to medical coding errors across all reported months. This reflects the highest standard of coding precision and diligence.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Charts Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <div class="card p-6">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">Patient Volume vs. Paid Claims</h2>
+                    <div class="chart-container">
+                        <canvas id="patientsVsClaimsChart"></canvas>
+                    </div>
+                </div>
+                <div class="card p-6">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">Monthly Patient Flow Distribution</h2>
+                     <div class="chart-container">
+                        <canvas id="patientFlowPieChart"></canvas>
+                    </div>
+                </div>
+                <div class="card p-6">
+                     <h2 class="text-xl font-semibold text-gray-700 mb-4">Total Payments Trend</h2>
+                     <div class="chart-container">
+                        <canvas id="paymentsTrendChart"></canvas>
+                    </div>
+                </div>
+                <div class="card p-6">
+                     <h2 class="text-xl font-semibold text-gray-700 mb-4">Average Payment per Claim Trend</h2>
+                     <div class="chart-container">
+                        <canvas id="avgPaymentTrendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Table and Analysis -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2">
+                    <div class="card">
+                        <div class="p-6">
+                            <h2 class="text-xl font-semibold text-gray-700">Detailed Monthly Breakdown</h2>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm text-left text-gray-600">
+                                <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3">Month</th>
+                                        <th scope="col" class="px-6 py-3 text-right">Total Patients</th>
+                                        <th scope="col" class="px-6 py-3 text-right">Paid Claims</th>
+                                        <th scope="col" class="px-6 py-3 text-right">Claim Rate</th>
+                                        <th scope="col" class="px-6 py-3 text-right">Total Payments ($)</th>
+                                        <th scope="col" class="px-6 py-3 text-right">Avg. Payment/Claim ($)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="data-table-body">
+                                    <!-- Rows will be injected here by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analyst's Summary -->
+                <div class="lg:col-span-1">
+                     <div class="card p-6 h-full">
+                        <h2 class="text-xl font-semibold text-gray-700 mb-4">Senior Analyst's Summary</h2>
+                        <div id="analyst-summary" class="space-y-4 text-gray-600">
+                            <!-- Summary points will be injected here by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // --- 1. DATA SOURCE ---
+            const data = [
+                { month: "Oct 2024", totalPatients: 241, paidClaims: 229, payment: 489319.33 },
+                { month: "Nov 2024", totalPatients: 181, paidClaims: 171, payment: 241961.36 },
+                { month: "Dec 2024", totalPatients: 174, paidClaims: 153, payment: 288079.59 },
+                { month: "Jan 2025", totalPatients: 234, paidClaims: 208, payment: 333730.10 },
+                { month: "Feb 2025", totalPatients: 134, paidClaims: 117, payment: 384331.26 },
+                { month: "Mar 2025", totalPatients: 211, paidClaims: 172, payment: 459446.36 },
+                { month: "Apr 2025", totalPatients: 174, paidClaims: 128, payment: 276089.28 },
+            ];
+
+            // --- 2. DATA PROCESSING & CALCULATIONS ---
+            const labels = data.map(d => d.month);
+            const totalPatientsData = data.map(d => d.totalPatients);
+            const paidClaimsData = data.map(d => d.paidClaims);
+            const paymentData = data.map(d => d.payment);
+            const avgPaymentData = data.map(d => d.paidClaims > 0 ? (d.payment / d.paidClaims) : 0);
+
+            const grandTotalPatients = totalPatientsData.reduce((sum, val) => sum + val, 0);
+            const grandTotalPaidClaims = paidClaimsData.reduce((sum, val) => sum + val, 0);
+            const grandTotalPayment = paymentData.reduce((sum, val) => sum + val, 0);
+            
+            const overallClaimRate = (grandTotalPaidClaims / grandTotalPatients * 100).toFixed(2);
+            const avgPaymentPerClaim = (grandTotalPayment / grandTotalPaidClaims).toFixed(2);
+            
+            const patientFlowPercentage = data.map(d => (d.totalPatients / grandTotalPatients * 100).toFixed(2));
+
+            // --- 3. RENDER KEY METRICS ---
+            const metricsContainer = document.getElementById('key-metrics');
+            metricsContainer.innerHTML = `
+                <div class="card p-6">
+                    <h3 class="text-sm font-medium text-gray-500">Total Patients</h3>
+                    <p class="mt-1 text-3xl font-semibold text-gray-900">${grandTotalPatients.toLocaleString()}</p>
+                </div>
+                <div class="card p-6">
+                    <h3 class="text-sm font-medium text-gray-500">Total Payments</h3>
+                    <p class="mt-1 text-3xl font-semibold text-green-600">$${grandTotalPayment.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+                </div>
+                <div class="card p-6">
+                    <h3 class="text-sm font-medium text-gray-500">Overall Paid Claim Rate</h3>
+                    <p class="mt-1 text-3xl font-semibold text-gray-900">${overallClaimRate}%</p>
+                </div>
+                <div class="card p-6">
+                    <h3 class="text-sm font-medium text-gray-500">Avg. Payment / Claim</h3>
+                    <p class="mt-1 text-3xl font-semibold text-gray-900">$${Number(avgPaymentPerClaim).toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
+                </div>
+            `;
+
+            // --- 4. RENDER CHARTS ---
+            const chartDefaultOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'top' },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) { label += ': '; }
+                                if (context.parsed.y !== null) {
+                                    label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.y);
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: { grid: { display: false } },
+                    y: { beginAtZero: true, grid: { color: '#e5e7eb' } }
+                }
+            };
+            
+            const formatAsCurrency = (value) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
+
+            // Chart 1: Patient Volume vs Paid Claims
+            new Chart(document.getElementById('patientsVsClaimsChart'), {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: 'Total Patients', data: totalPatientsData, backgroundColor: 'rgba(59, 130, 246, 0.6)', borderColor: 'rgba(59, 130, 246, 1)', borderWidth: 1 },
+                        { label: 'Paid Claims', data: paidClaimsData, backgroundColor: 'rgba(22, 163, 74, 0.6)', borderColor: 'rgba(22, 163, 74, 1)', borderWidth: 1 }
+                    ]
+                },
+                options: { ...chartDefaultOptions, plugins: { ...chartDefaultOptions.plugins, tooltip: { callbacks: { label: function(context) { return `${context.dataset.label}: ${context.parsed.y}`; } } } } }
+            });
+
+            // Chart 2: Patient Flow Distribution
+            new Chart(document.getElementById('patientFlowPieChart'), {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{ label: 'Patient Flow %', data: patientFlowPercentage, backgroundColor: ['#3B82F6', '#10B981', '#F97316', '#8B5CF6', '#EC4899', '#F59E0B', '#6366F1'] }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' }, tooltip: { callbacks: { label: (c) => `${c.label}: ${c.raw}%` } } } }
+            });
+            
+            // Chart 3: Payments Trend
+            new Chart(document.getElementById('paymentsTrendChart'), {
+                type: 'line',
+                data: { labels: labels, datasets: [{ label: 'Total Payments ($)', data: paymentData, borderColor: '#16A34A', backgroundColor: 'rgba(22, 163, 74, 0.1)', fill: true, tension: 0.4 }] },
+                options: chartDefaultOptions
+            });
+
+            // Chart 4: Average Payment Trend
+            new Chart(document.getElementById('avgPaymentTrendChart'), {
+                type: 'line',
+                data: { labels: labels, datasets: [{ label: 'Average Payment/Claim ($)', data: avgPaymentData, borderColor: '#8B5CF6', backgroundColor: 'rgba(139, 92, 246, 0.1)', fill: true, tension: 0.4 }] },
+                options: chartDefaultOptions
+            });
+
+            // --- 5. RENDER DATA TABLE ---
+            const tableBody = document.getElementById('data-table-body');
+            data.forEach(d => {
+                const claimRate = (d.paidClaims / d.totalPatients * 100).toFixed(1) + '%';
+                const avgPayment = d.paidClaims > 0 ? (d.payment / d.paidClaims) : 0;
+                const row = `
+                    <tr class="bg-white border-b hover:bg-gray-50">
+                        <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">${d.month}</td>
+                        <td class="px-6 py-4 text-right">${d.totalPatients.toLocaleString()}</td>
+                        <td class="px-6 py-4 text-right">${d.paidClaims.toLocaleString()}</td>
+                        <td class="px-6 py-4 text-right">${claimRate}</td>
+                        <td class="px-6 py-4 text-right text-green-700 font-medium">${formatAsCurrency(d.payment)}</td>
+                        <td class="px-6 py-4 text-right">${formatAsCurrency(avgPayment)}</td>
+                    </tr>`;
+                tableBody.innerHTML += row;
+            });
+            
+            // --- 6. RENDER ANALYST SUMMARY ---
+            const summaryContainer = document.getElementById('analyst-summary');
+            const peakPatientMonth = data.reduce((max, d) => d.totalPatients > max.totalPatients ? d : max);
+            const peakPaymentMonth = data.reduce((max, d) => d.payment > max.payment ? d : max);
+            
+            summaryContainer.innerHTML = `
+                <div>
+                    <h4 class="font-bold text-gray-800">Performance Highlights</h4>
+                    <p>The facility managed <strong>${grandTotalPatients} patients</strong> and secured <strong>${formatAsCurrency(grandTotalPayment)}</strong> in payments, with a strong overall paid claim rate of <strong>${overallClaimRate}%</strong>.</p>
+                </div>
+                <div>
+                    <h4 class="font-bold text-gray-800">Patient & Financial Trends</h4>
+                    <p>Patient volume peaked in <strong>${peakPatientMonth.month}</strong>, while total payments were highest in <strong>${peakPaymentMonth.month}</strong>. Notably, months with lower patient counts, like February 2025, show a high average payment per claim, suggesting a concentration of higher-value procedures.</p>
+                </div>
+                <div>
+                    <h4 class="font-bold text-gray-800">Operational Efficiency & Context</h4>
+                    <p>The paid claim rate saw a slight decline in <strong>Dec 2024 and Jan 2025</strong>, which is attributable to external <strong>Medicaid credentialing issues</strong>. The lower rate in <strong>April 2025</strong> is temporary, as many claims from that month are still pending insurance processing and are not yet reflected in the data.</p>
+                </div>
+                 <div>
+                    <h4 class="font-bold text-gray-800">Recommendation</h4>
+                    <p>Continue to monitor April's claim processing closely. The exceptional 0% denial rate from coding should be maintained as a key performance indicator of operational excellence.</p>
+                </div>
+            `;
+
+        });
+    </script>
+</body>
+</html>
